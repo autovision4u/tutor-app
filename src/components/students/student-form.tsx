@@ -4,7 +4,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { studentSchema, type StudentFormData } from "@/lib/validations";
+import { useTranslation } from "@/lib/i18n/context";
+import { createStudentSchema, type StudentFormData } from "@/lib/validations";
 import { createStudent, updateStudent } from "@/lib/actions/students";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +23,7 @@ export function StudentForm({
   onClose: () => void;
 }) {
   const router = useRouter();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -30,7 +32,7 @@ export function StudentForm({
     handleSubmit,
     formState: { errors },
   } = useForm<StudentFormData>({
-    resolver: zodResolver(studentSchema),
+    resolver: zodResolver(createStudentSchema(t)),
     defaultValues: {
       full_name: student?.full_name ?? "",
       phone: student?.phone ?? "",
@@ -52,7 +54,7 @@ export function StudentForm({
       router.refresh();
       onClose();
     } catch {
-      setError("Something went wrong. Please try again.");
+      setError(t("common.error"));
       setLoading(false);
     }
   }
@@ -60,7 +62,7 @@ export function StudentForm({
   return (
     <Card className="border-0 shadow-none">
       <CardHeader className="px-0 pt-0">
-        <CardTitle>{student ? "Edit Student" : "New Student"}</CardTitle>
+        <CardTitle>{student ? t("students.editStudent") : t("students.newStudent")}</CardTitle>
       </CardHeader>
       <CardContent className="px-0 pb-0">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -70,7 +72,7 @@ export function StudentForm({
             </div>
           )}
           <div className="space-y-2">
-            <Label htmlFor="full_name">Full Name *</Label>
+            <Label htmlFor="full_name">{t("students.fullName")}</Label>
             <Input id="full_name" {...register("full_name")} />
             {errors.full_name && (
               <p className="text-sm text-destructive">{errors.full_name.message}</p>
@@ -78,49 +80,36 @@ export function StudentForm({
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone</Label>
+              <Label htmlFor="phone">{t("students.phone")}</Label>
               <Input id="phone" {...register("phone")} placeholder="050-1234567" />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="parent_phone">Parent Phone</Label>
-              <Input
-                id="parent_phone"
-                {...register("parent_phone")}
-                placeholder="050-7654321"
-              />
+              <Label htmlFor="parent_phone">{t("students.parentPhone")}</Label>
+              <Input id="parent_phone" {...register("parent_phone")} placeholder="050-7654321" />
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="grade_level">Grade Level</Label>
-            <Input
-              id="grade_level"
-              {...register("grade_level")}
-              placeholder="e.g. 10th"
-            />
+            <Label htmlFor="grade_level">{t("students.grade")}</Label>
+            <Input id="grade_level" {...register("grade_level")} placeholder={t("students.gradePlaceholder")} />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="notes">Notes</Label>
-            <Textarea
-              id="notes"
-              {...register("notes")}
-              placeholder="Any relevant information..."
-              rows={3}
-            />
+            <Label htmlFor="notes">{t("students.notes")}</Label>
+            <Textarea id="notes" {...register("notes")} placeholder={t("students.notesPlaceholder")} rows={3} />
           </div>
           <div className="flex gap-3 justify-end pt-2">
             <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button type="submit" disabled={loading}>
               {loading ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Saving...
+                  <Loader2 className="me-2 h-4 w-4 animate-spin" />
+                  {t("common.saving")}
                 </>
               ) : student ? (
-                "Update Student"
+                t("common.updateStudent")
               ) : (
-                "Create Student"
+                t("common.createStudent")
               )}
             </Button>
           </div>

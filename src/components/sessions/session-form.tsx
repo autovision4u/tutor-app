@@ -4,7 +4,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { sessionSchema, type SessionFormData } from "@/lib/validations";
+import { useTranslation } from "@/lib/i18n/context";
+import { createSessionSchema, type SessionFormData } from "@/lib/validations";
 import { createSession, updateSession } from "@/lib/actions/sessions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +33,7 @@ export function SessionForm({
   onClose?: () => void;
 }) {
   const router = useRouter();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -42,11 +44,11 @@ export function SessionForm({
     watch,
     formState: { errors },
   } = useForm<SessionFormData>({
-    resolver: zodResolver(sessionSchema),
+    resolver: zodResolver(createSessionSchema(t)),
     defaultValues: {
       student_id: session?.student_id ?? "",
       title: session?.title ?? "",
-      subject: session?.subject ?? "Mathematics",
+      subject: session?.subject ?? "",
       topic: session?.topic ?? "",
       date: session?.date ?? defaultDate ?? new Date().toISOString().split("T")[0],
       start_time: session?.start_time?.slice(0, 5) ?? "",
@@ -80,7 +82,7 @@ export function SessionForm({
         router.refresh();
       }
     } catch {
-      setError("Something went wrong. Please try again.");
+      setError(t("common.error"));
       setLoading(false);
     }
   }
@@ -96,13 +98,13 @@ export function SessionForm({
       {/* Student & Title */}
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label>Student *</Label>
+          <Label>{t("sessions.student")}</Label>
           <Select
             value={studentId}
             onValueChange={(v) => setValue("student_id", v ?? "")}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select a student" />
+              <SelectValue placeholder={t("sessions.selectStudent")} />
             </SelectTrigger>
             <SelectContent>
               {students.map((s) => (
@@ -117,8 +119,8 @@ export function SessionForm({
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="title">Title *</Label>
-          <Input id="title" {...register("title")} placeholder="e.g. Algebra Review" />
+          <Label htmlFor="title">{t("sessions.titleLabel")}</Label>
+          <Input id="title" {...register("title")} placeholder={t("sessions.titlePlaceholder")} />
           {errors.title && (
             <p className="text-sm text-destructive">{errors.title.message}</p>
           )}
@@ -128,36 +130,36 @@ export function SessionForm({
       {/* Subject & Topic */}
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="subject">Subject *</Label>
-          <Input id="subject" {...register("subject")} placeholder="Mathematics" />
+          <Label htmlFor="subject">{t("sessions.subject")}</Label>
+          <Input id="subject" {...register("subject")} placeholder={t("sessions.subjectPlaceholder")} />
           {errors.subject && (
             <p className="text-sm text-destructive">{errors.subject.message}</p>
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="topic">Topic</Label>
-          <Input id="topic" {...register("topic")} placeholder="e.g. Quadratic Equations" />
+          <Label htmlFor="topic">{t("sessions.topic")}</Label>
+          <Input id="topic" {...register("topic")} placeholder={t("sessions.topicPlaceholder")} />
         </div>
       </div>
 
       {/* Date & Times */}
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="space-y-2">
-          <Label htmlFor="date">Date *</Label>
+          <Label htmlFor="date">{t("sessions.date")}</Label>
           <Input id="date" type="date" {...register("date")} />
           {errors.date && (
             <p className="text-sm text-destructive">{errors.date.message}</p>
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="start_time">Start Time *</Label>
+          <Label htmlFor="start_time">{t("sessions.startTime")}</Label>
           <Input id="start_time" type="time" {...register("start_time")} />
           {errors.start_time && (
             <p className="text-sm text-destructive">{errors.start_time.message}</p>
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="end_time">End Time *</Label>
+          <Label htmlFor="end_time">{t("sessions.endTime")}</Label>
           <Input id="end_time" type="time" {...register("end_time")} />
           {errors.end_time && (
             <p className="text-sm text-destructive">{errors.end_time.message}</p>
@@ -168,7 +170,7 @@ export function SessionForm({
       {/* Status & Payment */}
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="space-y-2">
-          <Label>Status</Label>
+          <Label>{t("sessions.status")}</Label>
           <Select
             value={status}
             onValueChange={(v) =>
@@ -179,15 +181,15 @@ export function SessionForm({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="scheduled">Scheduled</SelectItem>
-              <SelectItem value="completed">Completed</SelectItem>
-              <SelectItem value="cancelled">Cancelled</SelectItem>
-              <SelectItem value="no_show">No Show</SelectItem>
+              <SelectItem value="scheduled">{t("status.scheduled")}</SelectItem>
+              <SelectItem value="completed">{t("status.completed")}</SelectItem>
+              <SelectItem value="cancelled">{t("status.cancelled")}</SelectItem>
+              <SelectItem value="no_show">{t("status.no_show")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="price">Price (ILS) *</Label>
+          <Label htmlFor="price">{t("sessions.price")}</Label>
           <Input
             id="price"
             type="number"
@@ -200,7 +202,7 @@ export function SessionForm({
           )}
         </div>
         <div className="space-y-2">
-          <Label>Payment Status</Label>
+          <Label>{t("sessions.paymentStatus")}</Label>
           <Select
             value={paymentStatus}
             onValueChange={(v) =>
@@ -211,9 +213,9 @@ export function SessionForm({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="unpaid">Unpaid</SelectItem>
-              <SelectItem value="paid">Paid</SelectItem>
-              <SelectItem value="waived">Waived</SelectItem>
+              <SelectItem value="unpaid">{t("payment.unpaid")}</SelectItem>
+              <SelectItem value="paid">{t("payment.paid")}</SelectItem>
+              <SelectItem value="waived">{t("payment.waived")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -222,12 +224,12 @@ export function SessionForm({
       {/* Notes & Homework */}
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="notes">Notes</Label>
-          <Textarea id="notes" {...register("notes")} rows={3} placeholder="Session notes..." />
+          <Label htmlFor="notes">{t("sessions.notesLabel")}</Label>
+          <Textarea id="notes" {...register("notes")} rows={3} placeholder={t("sessions.notesPlaceholder")} />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="homework">Homework</Label>
-          <Textarea id="homework" {...register("homework")} rows={3} placeholder="Assigned homework..." />
+          <Label htmlFor="homework">{t("sessions.homework")}</Label>
+          <Textarea id="homework" {...register("homework")} rows={3} placeholder={t("sessions.homeworkPlaceholder")} />
         </div>
       </div>
 
@@ -235,27 +237,23 @@ export function SessionForm({
       <div className="flex gap-3 justify-end pt-2">
         {onClose ? (
           <Button type="button" variant="outline" onClick={onClose}>
-            Cancel
+            {t("common.cancel")}
           </Button>
         ) : (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.back()}
-          >
-            Cancel
+          <Button type="button" variant="outline" onClick={() => router.back()}>
+            {t("common.cancel")}
           </Button>
         )}
         <Button type="submit" disabled={loading}>
           {loading ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Saving...
+              <Loader2 className="me-2 h-4 w-4 animate-spin" />
+              {t("common.saving")}
             </>
           ) : session ? (
-            "Update Session"
+            t("common.updateSession")
           ) : (
-            "Create Session"
+            t("common.createSession")
           )}
         </Button>
       </div>

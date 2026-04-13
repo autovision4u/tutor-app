@@ -10,15 +10,15 @@ import {
   endOfWeek,
   eachDayOfInterval,
   isSameMonth,
-  isSameDay,
   isToday,
   addMonths,
   subMonths,
   addWeeks,
   subWeeks,
-  startOfDay,
 } from "date-fns";
+import { he, enUS, ru } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/lib/i18n/context";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -28,6 +28,8 @@ import {
 import { SessionForm } from "./session-form";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { SessionWithStudent, Student } from "@/types";
+
+const dateFnsLocales = { he, en: enUS, ru };
 
 const statusColors: Record<string, string> = {
   scheduled: "bg-blue-500",
@@ -46,10 +48,17 @@ export function SessionsCalendar({
   students: Student[];
 }) {
   const router = useRouter();
+  const { t, locale, dir } = useTranslation();
+  const dfLocale = dateFnsLocales[locale] ?? enUS;
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>("month");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string>("");
+
+  const dayNames = [
+    t("calendar.sun"), t("calendar.mon"), t("calendar.tue"), t("calendar.wed"),
+    t("calendar.thu"), t("calendar.fri"), t("calendar.sat"),
+  ];
 
   const sessionsByDate = useMemo(() => {
     const map = new Map<string, SessionWithStudent[]>();
@@ -58,7 +67,6 @@ export function SessionsCalendar({
       if (!map.has(dateKey)) map.set(dateKey, []);
       map.get(dateKey)!.push(session);
     });
-    // Sort sessions within each day by start_time
     map.forEach((daySessions) =>
       daySessions.sort((a, b) => a.start_time.localeCompare(b.start_time))
     );
@@ -97,30 +105,29 @@ export function SessionsCalendar({
     router.push(`/sessions/${sessionId}`);
   }
 
+  const PrevIcon = dir === "rtl" ? ChevronRight : ChevronLeft;
+  const NextIcon = dir === "rtl" ? ChevronLeft : ChevronRight;
+
   return (
     <div className="space-y-4">
       {/* Calendar header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon" onClick={() => navigate("prev")}>
-            <ChevronLeft className="h-4 w-4" />
+            <PrevIcon className="h-4 w-4" />
           </Button>
           <h2 className="text-lg font-semibold min-w-[200px] text-center">
             {viewMode === "month"
-              ? format(currentDate, "MMMM yyyy")
-              : `Week of ${format(startOfWeek(currentDate, { weekStartsOn: 0 }), "MMM d, yyyy")}`}
+              ? format(currentDate, "MMMM yyyy", { locale: dfLocale })
+              : t("calendar.weekOf", { date: format(startOfWeek(currentDate, { weekStartsOn: 0 }), "MMM d, yyyy", { locale: dfLocale }) })}
           </h2>
           <Button variant="outline" size="icon" onClick={() => navigate("next")}>
-            <ChevronRight className="h-4 w-4" />
+            <NextIcon className="h-4 w-4" />
           </Button>
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setCurrentDate(new Date())}
-          >
-            Today
+          <Button variant="outline" size="sm" onClick={() => setCurrentDate(new Date())}>
+            {t("calendar.today")}
           </Button>
           <div className="flex border rounded-lg overflow-hidden">
             <Button
@@ -129,7 +136,7 @@ export function SessionsCalendar({
               className="rounded-none"
               onClick={() => setViewMode("month")}
             >
-              Month
+              {t("calendar.month")}
             </Button>
             <Button
               variant={viewMode === "week" ? "default" : "ghost"}
@@ -137,7 +144,7 @@ export function SessionsCalendar({
               className="rounded-none"
               onClick={() => setViewMode("week")}
             >
-              Week
+              {t("calendar.week")}
             </Button>
           </div>
         </div>
@@ -145,11 +152,8 @@ export function SessionsCalendar({
 
       {/* Day headers */}
       <div className="grid grid-cols-7 gap-px bg-muted rounded-t-lg overflow-hidden">
-        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-          <div
-            key={day}
-            className="bg-muted p-2 text-center text-sm font-medium text-muted-foreground"
-          >
+        {dayNames.map((day) => (
+          <div key={day} className="bg-muted p-2 text-center text-sm font-medium text-muted-foreground">
             {day}
           </div>
         ))}
@@ -159,7 +163,7 @@ export function SessionsCalendar({
       <div
         className={cn(
           "grid grid-cols-7 gap-px bg-muted rounded-b-lg overflow-hidden",
-          viewMode === "week" ? "auto-rows-[200px]" : "auto-rows-[100px] lg:auto-rows-[120px]"
+          viewMode === "week" ? "auto-rows-[200px]" : "auto-rows-[80px] sm:auto-rows-[100px] lg:auto-rows-[120px]"
         )}
       >
         {days.map((day) => {
@@ -186,9 +190,7 @@ export function SessionsCalendar({
                   {format(day, "d")}
                 </span>
                 {daySessions.length > 0 && viewMode === "month" && (
-                  <span className="text-xs text-muted-foreground">
-                    {daySessions.length}
-                  </span>
+                  <span className="text-xs text-muted-foreground">{daySessions.length}</span>
                 )}
               </div>
               <div className="space-y-0.5">
@@ -200,16 +202,9 @@ export function SessionsCalendar({
                       onClick={(e) => handleSessionClick(e, session.id)}
                       className="flex items-center gap-1 px-1.5 py-0.5 rounded text-xs hover:bg-muted transition-colors cursor-pointer group"
                     >
-                      <div
-                        className={cn(
-                          "h-1.5 w-1.5 rounded-full shrink-0",
-                          statusColors[session.status]
-                        )}
-                      />
+                      <div className={cn("h-1.5 w-1.5 rounded-full shrink-0", statusColors[session.status])} />
                       <span className="truncate">
-                        <span className="font-medium">
-                          {session.start_time.slice(0, 5)}
-                        </span>{" "}
+                        <span className="font-medium">{session.start_time.slice(0, 5)}</span>{" "}
                         <span className="text-muted-foreground group-hover:text-foreground">
                           {session.student.full_name.split(" ")[0]}
                         </span>
@@ -218,7 +213,7 @@ export function SessionsCalendar({
                   ))}
                 {daySessions.length > (viewMode === "week" ? 8 : 3) && (
                   <p className="text-xs text-muted-foreground px-1.5">
-                    +{daySessions.length - (viewMode === "week" ? 8 : 3)} more
+                    {t("calendar.more", { count: daySessions.length - (viewMode === "week" ? 8 : 3) })}
                   </p>
                 )}
               </div>
@@ -232,7 +227,7 @@ export function SessionsCalendar({
         {Object.entries(statusColors).map(([status, color]) => (
           <div key={status} className="flex items-center gap-1.5">
             <div className={cn("h-2 w-2 rounded-full", color)} />
-            <span className="capitalize">{status.replace("_", " ")}</span>
+            <span>{t(`status.${status}`)}</span>
           </div>
         ))}
       </div>
@@ -241,7 +236,7 @@ export function SessionsCalendar({
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
           <h2 className="text-lg font-semibold mb-4">
-            New Session — {selectedDate && format(new Date(selectedDate), "MMMM d, yyyy")}
+            {t("calendar.newSession", { date: selectedDate && format(new Date(selectedDate), "MMMM d, yyyy", { locale: dfLocale }) })}
           </h2>
           <SessionForm
             students={students}

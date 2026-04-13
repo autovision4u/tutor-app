@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { deleteStudent } from "@/lib/actions/students";
+import { useTranslation } from "@/lib/i18n/context";
 import { StudentForm } from "./student-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,6 +39,7 @@ import type { Student } from "@/types";
 
 export function StudentsList({ students }: { students: Student[] }) {
   const router = useRouter();
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | undefined>();
@@ -57,9 +59,7 @@ export function StudentsList({ students }: { students: Student[] }) {
   }
 
   async function handleDelete(id: string) {
-    if (!confirm("Are you sure you want to delete this student? This will also delete all their sessions.")) {
-      return;
-    }
+    if (!confirm(t("students.deleteConfirm"))) return;
     await deleteStudent(id);
     router.refresh();
   }
@@ -69,9 +69,9 @@ export function StudentsList({ students }: { students: Student[] }) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Students</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t("students.title")}</h1>
           <p className="text-muted-foreground">
-            {students.length} student{students.length !== 1 ? "s" : ""}
+            {t("students.count", { count: students.length })}
           </p>
         </div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -79,8 +79,8 @@ export function StudentsList({ students }: { students: Student[] }) {
             onClick={handleNew}
             className="inline-flex items-center justify-center rounded-lg bg-primary text-primary-foreground h-8 gap-1.5 px-2.5 text-sm font-medium"
           >
-            <Plus className="h-4 w-4 mr-2" />
-            Add Student
+            <Plus className="h-4 w-4 me-2" />
+            {t("students.addStudent")}
           </DialogTrigger>
           <DialogContent className="sm:max-w-lg">
             <StudentForm
@@ -93,12 +93,12 @@ export function StudentsList({ students }: { students: Student[] }) {
 
       {/* Search */}
       <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="Search students..."
+          placeholder={t("students.searchPlaceholder")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="pl-9"
+          className="ps-9"
         />
       </div>
 
@@ -107,13 +107,11 @@ export function StudentsList({ students }: { students: Student[] }) {
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16">
             <Users className="h-12 w-12 text-muted-foreground/50 mb-4" />
-            <h3 className="text-lg font-semibold mb-1">No students yet</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Add your first student to get started
-            </p>
+            <h3 className="text-lg font-semibold mb-1">{t("students.noStudents")}</h3>
+            <p className="text-sm text-muted-foreground mb-4">{t("students.addFirst")}</p>
             <Button onClick={handleNew}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Student
+              <Plus className="h-4 w-4 me-2" />
+              {t("students.addStudent")}
             </Button>
           </CardContent>
         </Card>
@@ -121,10 +119,8 @@ export function StudentsList({ students }: { students: Student[] }) {
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16">
             <Search className="h-12 w-12 text-muted-foreground/50 mb-4" />
-            <h3 className="text-lg font-semibold mb-1">No results found</h3>
-            <p className="text-sm text-muted-foreground">
-              Try a different search term
-            </p>
+            <h3 className="text-lg font-semibold mb-1">{t("students.noResults")}</h3>
+            <p className="text-sm text-muted-foreground">{t("students.tryDifferent")}</p>
           </CardContent>
         </Card>
       ) : (
@@ -132,11 +128,11 @@ export function StudentsList({ students }: { students: Student[] }) {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead className="hidden sm:table-cell">Phone</TableHead>
-                <TableHead className="hidden md:table-cell">Parent Phone</TableHead>
-                <TableHead className="hidden lg:table-cell">Grade</TableHead>
-                <TableHead className="hidden xl:table-cell">Notes</TableHead>
+                <TableHead>{t("students.name")}</TableHead>
+                <TableHead className="hidden sm:table-cell">{t("students.phone")}</TableHead>
+                <TableHead className="hidden md:table-cell">{t("students.parentPhone")}</TableHead>
+                <TableHead className="hidden lg:table-cell">{t("students.grade")}</TableHead>
+                <TableHead className="hidden xl:table-cell">{t("students.notes")}</TableHead>
                 <TableHead className="w-10" />
               </TableRow>
             </TableHeader>
@@ -184,8 +180,8 @@ export function StudentsList({ students }: { students: Student[] }) {
                             handleEdit(student);
                           }}
                         >
-                          <Pencil className="h-4 w-4 mr-2" />
-                          Edit
+                          <Pencil className="h-4 w-4 me-2" />
+                          {t("common.edit")}
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           className="text-destructive"
@@ -194,8 +190,8 @@ export function StudentsList({ students }: { students: Student[] }) {
                             handleDelete(student.id);
                           }}
                         >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Delete
+                          <Trash2 className="h-4 w-4 me-2" />
+                          {t("common.delete")}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>

@@ -2,8 +2,10 @@
 
 import { useState, useMemo } from "react";
 import { format } from "date-fns";
+import { he, enUS, ru } from "date-fns/locale";
 import { useRouter } from "next/navigation";
 import { deleteSession } from "@/lib/actions/sessions";
+import { useTranslation } from "@/lib/i18n/context";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -38,6 +40,8 @@ import {
 } from "lucide-react";
 import type { SessionWithStudent, Student } from "@/types";
 
+const dateFnsLocales = { he, en: enUS, ru };
+
 const statusColors: Record<string, string> = {
   scheduled: "bg-blue-100 text-blue-800",
   completed: "bg-green-100 text-green-800",
@@ -62,6 +66,8 @@ export function SessionsTable({
   students: Student[];
 }) {
   const router = useRouter();
+  const { t, locale } = useTranslation();
+  const dfLocale = dateFnsLocales[locale] ?? enUS;
   const [search, setSearch] = useState("");
   const [filterStudent, setFilterStudent] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -92,15 +98,9 @@ export function SessionsTable({
       );
     }
 
-    if (filterStudent !== "all") {
-      result = result.filter((s) => s.student_id === filterStudent);
-    }
-    if (filterStatus !== "all") {
-      result = result.filter((s) => s.status === filterStatus);
-    }
-    if (filterPayment !== "all") {
-      result = result.filter((s) => s.payment_status === filterPayment);
-    }
+    if (filterStudent !== "all") result = result.filter((s) => s.student_id === filterStudent);
+    if (filterStatus !== "all") result = result.filter((s) => s.status === filterStatus);
+    if (filterPayment !== "all") result = result.filter((s) => s.payment_status === filterPayment);
 
     result = [...result].sort((a, b) => {
       let cmp = 0;
@@ -125,17 +125,14 @@ export function SessionsTable({
   }, [sessions, search, filterStudent, filterStatus, filterPayment, sortKey, sortDir]);
 
   async function handleDelete(id: string) {
-    if (!confirm("Delete this session?")) return;
+    if (!confirm(t("sessions.deleteConfirm"))) return;
     await deleteSession(id);
     router.refresh();
   }
 
   function SortableHead({ label, sortKeyName }: { label: string; sortKeyName: SortKey }) {
     return (
-      <TableHead
-        className="cursor-pointer select-none"
-        onClick={() => toggleSort(sortKeyName)}
-      >
+      <TableHead className="cursor-pointer select-none" onClick={() => toggleSort(sortKeyName)}>
         <span className="flex items-center gap-1">
           {label}
           <ArrowUpDown className="h-3 w-3 text-muted-foreground" />
@@ -149,48 +146,46 @@ export function SessionsTable({
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search sessions..."
+            placeholder={t("sessions.searchPlaceholder")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
+            className="ps-9"
           />
         </div>
         <Select value={filterStudent} onValueChange={(v) => setFilterStudent(v ?? "all")}>
-          <SelectTrigger className="w-[160px]">
-            <SelectValue placeholder="All Students" />
+          <SelectTrigger className="w-full sm:w-[160px]">
+            <SelectValue placeholder={t("sessions.allStudents")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Students</SelectItem>
+            <SelectItem value="all">{t("sessions.allStudents")}</SelectItem>
             {students.map((s) => (
-              <SelectItem key={s.id} value={s.id}>
-                {s.full_name}
-              </SelectItem>
+              <SelectItem key={s.id} value={s.id}>{s.full_name}</SelectItem>
             ))}
           </SelectContent>
         </Select>
         <Select value={filterStatus} onValueChange={(v) => setFilterStatus(v ?? "all")}>
-          <SelectTrigger className="w-[140px]">
-            <SelectValue placeholder="All Status" />
+          <SelectTrigger className="w-full sm:w-[140px]">
+            <SelectValue placeholder={t("sessions.allStatus")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="scheduled">Scheduled</SelectItem>
-            <SelectItem value="completed">Completed</SelectItem>
-            <SelectItem value="cancelled">Cancelled</SelectItem>
-            <SelectItem value="no_show">No Show</SelectItem>
+            <SelectItem value="all">{t("sessions.allStatus")}</SelectItem>
+            <SelectItem value="scheduled">{t("status.scheduled")}</SelectItem>
+            <SelectItem value="completed">{t("status.completed")}</SelectItem>
+            <SelectItem value="cancelled">{t("status.cancelled")}</SelectItem>
+            <SelectItem value="no_show">{t("status.no_show")}</SelectItem>
           </SelectContent>
         </Select>
         <Select value={filterPayment} onValueChange={(v) => setFilterPayment(v ?? "all")}>
-          <SelectTrigger className="w-[140px]">
-            <SelectValue placeholder="All Payment" />
+          <SelectTrigger className="w-full sm:w-[140px]">
+            <SelectValue placeholder={t("sessions.allPayment")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Payment</SelectItem>
-            <SelectItem value="unpaid">Unpaid</SelectItem>
-            <SelectItem value="paid">Paid</SelectItem>
-            <SelectItem value="waived">Waived</SelectItem>
+            <SelectItem value="all">{t("sessions.allPayment")}</SelectItem>
+            <SelectItem value="unpaid">{t("payment.unpaid")}</SelectItem>
+            <SelectItem value="paid">{t("payment.paid")}</SelectItem>
+            <SelectItem value="waived">{t("payment.waived")}</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -200,11 +195,9 @@ export function SessionsTable({
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16">
             <CalendarDays className="h-12 w-12 text-muted-foreground/50 mb-4" />
-            <h3 className="text-lg font-semibold mb-1">No sessions found</h3>
+            <h3 className="text-lg font-semibold mb-1">{t("sessions.noSessions")}</h3>
             <p className="text-sm text-muted-foreground">
-              {sessions.length === 0
-                ? "Create your first session to get started"
-                : "Try adjusting your filters"}
+              {sessions.length === 0 ? t("sessions.createFirst") : t("sessions.adjustFilters")}
             </p>
           </CardContent>
         </Card>
@@ -214,14 +207,14 @@ export function SessionsTable({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <SortableHead label="Date" sortKeyName="date" />
-                  <TableHead>Time</TableHead>
-                  <SortableHead label="Student" sortKeyName="student" />
-                  <TableHead className="hidden md:table-cell">Title</TableHead>
-                  <TableHead className="hidden lg:table-cell">Subject</TableHead>
-                  <SortableHead label="Status" sortKeyName="status" />
-                  <SortableHead label="Price" sortKeyName="price" />
-                  <TableHead>Payment</TableHead>
+                  <SortableHead label={t("sessions.date")} sortKeyName="date" />
+                  <TableHead className="hidden sm:table-cell">{t("sessions.time")}</TableHead>
+                  <SortableHead label={t("sessions.student")} sortKeyName="student" />
+                  <TableHead className="hidden md:table-cell">{t("sessions.titleLabel")}</TableHead>
+                  <TableHead className="hidden lg:table-cell">{t("sessions.subject")}</TableHead>
+                  <SortableHead label={t("sessions.status")} sortKeyName="status" />
+                  <SortableHead label={t("sessions.price")} sortKeyName="price" />
+                  <TableHead className="hidden sm:table-cell">{t("sessions.payment")}</TableHead>
                   <TableHead className="w-10" />
                 </TableRow>
               </TableHeader>
@@ -233,9 +226,9 @@ export function SessionsTable({
                     onClick={() => router.push(`/sessions/${session.id}`)}
                   >
                     <TableCell className="whitespace-nowrap">
-                      {format(new Date(session.date), "MMM d, yyyy")}
+                      {format(new Date(session.date), "MMM d, yyyy", { locale: dfLocale })}
                     </TableCell>
-                    <TableCell className="whitespace-nowrap text-muted-foreground">
+                    <TableCell className="hidden sm:table-cell whitespace-nowrap text-muted-foreground">
                       {session.start_time.slice(0, 5)} - {session.end_time.slice(0, 5)}
                     </TableCell>
                     <TableCell>
@@ -257,22 +250,16 @@ export function SessionsTable({
                       {session.subject}
                     </TableCell>
                     <TableCell>
-                      <Badge
-                        variant="secondary"
-                        className={statusColors[session.status]}
-                      >
-                        {session.status.replace("_", " ")}
+                      <Badge variant="secondary" className={statusColors[session.status]}>
+                        {t(`status.${session.status}`)}
                       </Badge>
                     </TableCell>
                     <TableCell className="whitespace-nowrap">
-                      {Number(session.price).toLocaleString()} ILS
+                      {Number(session.price).toLocaleString()} {t("common.ils")}
                     </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="secondary"
-                        className={paymentColors[session.payment_status]}
-                      >
-                        {session.payment_status}
+                    <TableCell className="hidden sm:table-cell">
+                      <Badge variant="secondary" className={paymentColors[session.payment_status]}>
+                        {t(`payment.${session.payment_status}`)}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -290,8 +277,8 @@ export function SessionsTable({
                               router.push(`/sessions/${session.id}`);
                             }}
                           >
-                            <Pencil className="h-4 w-4 mr-2" />
-                            Edit
+                            <Pencil className="h-4 w-4 me-2" />
+                            {t("common.edit")}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             className="text-destructive"
@@ -300,8 +287,8 @@ export function SessionsTable({
                               handleDelete(session.id);
                             }}
                           >
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Delete
+                            <Trash2 className="h-4 w-4 me-2" />
+                            {t("common.delete")}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -314,8 +301,8 @@ export function SessionsTable({
         </Card>
       )}
 
-      <p className="text-xs text-muted-foreground text-right">
-        Showing {filtered.length} of {sessions.length} sessions
+      <p className="text-xs text-muted-foreground text-end">
+        {t("sessions.showing", { filtered: filtered.length, total: sessions.length })}
       </p>
     </div>
   );
