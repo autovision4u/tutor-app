@@ -25,11 +25,13 @@ export function SessionForm({
   session,
   students,
   defaultDate,
+  defaultPrice,
   onClose,
 }: {
   session?: Session;
   students: Student[];
   defaultDate?: string;
+  defaultPrice?: number;
   onClose?: () => void;
 }) {
   const router = useRouter();
@@ -56,7 +58,7 @@ export function SessionForm({
       status: session?.status ?? "scheduled",
       notes: session?.notes ?? "",
       homework: session?.homework ?? "",
-      price: session?.price ?? 150,
+      price: session?.price ?? defaultPrice ?? 150,
       payment_status: session?.payment_status ?? "unpaid",
     },
   });
