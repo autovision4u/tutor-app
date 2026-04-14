@@ -153,6 +153,30 @@ const he: TranslationDict = {
   "settings.saved": "ההגדרות נשמרו בהצלחה!",
   "settings.save": "שמור הגדרות",
 
+  // Student details modal
+  "studentDetails.title": "{name}",
+  "studentDetails.subtitle": "{count} שיעורים",
+  "studentDetails.totalEarnings": "סה\"כ הכנסות",
+  "studentDetails.unpaidAmount": "סה\"כ לא שולם",
+  "studentDetails.noSessions": "אין שיעורים עדיין",
+  "studentDetails.viewAll": "צפה בכל השיעורים",
+
+  // Subjects
+  "subject.math": "מתמטיקה",
+  "subject.english": "אנגלית",
+  "subject.hebrew": "עברית",
+  "subject.arabic": "ערבית",
+  "subject.physics": "פיזיקה",
+  "subject.chemistry": "כימיה",
+  "subject.biology": "ביולוגיה",
+  "subject.history": "היסטוריה",
+  "subject.geography": "גיאוגרפיה",
+  "subject.bible": "תנ\"ך",
+  "subject.literature": "ספרות",
+  "subject.civics": "אזרחות",
+  "subject.computer_science": "מדעי המחשב",
+  "subject.other": "אחר",
+
   // Validation
   "validation.nameMin": "השם חייב להכיל לפחות 2 תווים",
   "validation.selectStudent": "יש לבחור תלמיד",

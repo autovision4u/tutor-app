@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { GraduationCap, Loader2 } from "lucide-react";
+import { GraduationCap, Loader2, Sparkles } from "lucide-react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -30,22 +30,61 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4 relative">
-      <div className="absolute top-4 end-4">
+    <div className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden">
+      {/* Floating sparkles */}
+      <div className="absolute inset-0 pointer-events-none">
+        {[...Array(15)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute animate-pulse"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 3}s`,
+              animationDuration: `${2 + Math.random() * 2}s`,
+            }}
+          >
+            <Sparkles
+              className="text-purple-300/40"
+              size={Math.random() * 20 + 10}
+            />
+          </div>
+        ))}
+      </div>
+
+      <div className="absolute top-4 end-4 z-10">
         <LanguageSwitcher compact />
       </div>
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center space-y-2">
-          <div className="mx-auto w-12 h-12 bg-primary rounded-xl flex items-center justify-center mb-2">
-            <GraduationCap className="w-6 h-6 text-primary-foreground" />
+
+      <Card className="w-full max-w-md relative z-10 animate-[scale-in_0.4s_cubic-bezier(0.4,0,0.2,1)]">
+        <CardHeader className="text-center space-y-3">
+          <div className="relative mx-auto">
+            <div
+              className="absolute inset-0 rounded-2xl blur-2xl opacity-60"
+              style={{
+                background: "linear-gradient(135deg, oklch(0.7 0.2 290), oklch(0.7 0.2 330))",
+              }}
+            />
+            <div
+              className="relative w-16 h-16 rounded-2xl flex items-center justify-center mx-auto"
+              style={{
+                background: "linear-gradient(135deg, oklch(0.6 0.2 290), oklch(0.55 0.22 320))",
+                boxShadow: "0 10px 30px oklch(0.55 0.2 290 / 0.4)",
+                animation: "float-up 3s ease-in-out infinite",
+              }}
+            >
+              <GraduationCap className="w-8 h-8 text-white" />
+            </div>
           </div>
-          <CardTitle className="text-2xl font-bold">{t("login.title")}</CardTitle>
-          <CardDescription>{t("login.description")}</CardDescription>
+          <CardTitle className="text-3xl font-bold gradient-text">
+            {t("login.title")}
+          </CardTitle>
+          <CardDescription className="text-base">{t("login.description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
-              <div className="bg-destructive/10 text-destructive text-sm rounded-lg p-3">
+              <div className="bg-destructive/10 text-destructive text-sm rounded-lg p-3 animate-[fade-up_0.3s_ease-out]">
                 {error}
               </div>
             )}
@@ -71,7 +110,7 @@ export default function LoginPage() {
                 required
               />
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button type="submit" className="w-full h-11 text-base font-semibold" disabled={loading}>
               {loading ? (
                 <>
                   <Loader2 className="ms-2 h-4 w-4 animate-spin" />

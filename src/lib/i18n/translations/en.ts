@@ -153,6 +153,30 @@ const en: TranslationDict = {
   "settings.saved": "Settings saved successfully!",
   "settings.save": "Save Settings",
 
+  // Student details modal
+  "studentDetails.title": "{name}",
+  "studentDetails.subtitle": "{count} sessions",
+  "studentDetails.totalEarnings": "Total Earnings",
+  "studentDetails.unpaidAmount": "Total Unpaid",
+  "studentDetails.noSessions": "No sessions yet",
+  "studentDetails.viewAll": "View all sessions",
+
+  // Subjects
+  "subject.math": "Mathematics",
+  "subject.english": "English",
+  "subject.hebrew": "Hebrew",
+  "subject.arabic": "Arabic",
+  "subject.physics": "Physics",
+  "subject.chemistry": "Chemistry",
+  "subject.biology": "Biology",
+  "subject.history": "History",
+  "subject.geography": "Geography",
+  "subject.bible": "Bible",
+  "subject.literature": "Literature",
+  "subject.civics": "Civics",
+  "subject.computer_science": "Computer Science",
+  "subject.other": "Other",
+
   // Validation
   "validation.nameMin": "Name must be at least 2 characters",
   "validation.selectStudent": "Please select a student",

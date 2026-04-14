@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "@/lib/i18n/context";
 import { createSessionSchema, type SessionFormData } from "@/lib/validations";
 import { createSession, updateSession } from "@/lib/actions/sessions";
+import { SUBJECT_KEYS } from "@/lib/subjects";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -66,6 +67,7 @@ export function SessionForm({
   const status = watch("status");
   const paymentStatus = watch("payment_status");
   const studentId = watch("student_id");
+  const subject = watch("subject");
 
   async function onSubmit(data: SessionFormData) {
     setLoading(true);
@@ -132,8 +134,22 @@ export function SessionForm({
       {/* Subject & Topic */}
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="subject">{t("sessions.subject")}</Label>
-          <Input id="subject" {...register("subject")} placeholder={t("sessions.subjectPlaceholder")} />
+          <Label>{t("sessions.subject")}</Label>
+          <Select
+            value={subject}
+            onValueChange={(v) => setValue("subject", v ?? "")}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder={t("sessions.subjectPlaceholder")} />
+            </SelectTrigger>
+            <SelectContent>
+              {SUBJECT_KEYS.map((key) => (
+                <SelectItem key={key} value={key}>
+                  {t(`subject.${key}`)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           {errors.subject && (
             <p className="text-sm text-destructive">{errors.subject.message}</p>
           )}

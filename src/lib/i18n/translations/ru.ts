@@ -153,6 +153,30 @@ const ru: TranslationDict = {
   "settings.saved": "Настройки сохранены!",
   "settings.save": "Сохранить настройки",
 
+  // Student details modal
+  "studentDetails.title": "{name}",
+  "studentDetails.subtitle": "{count} занятий",
+  "studentDetails.totalEarnings": "Всего заработано",
+  "studentDetails.unpaidAmount": "Не оплачено",
+  "studentDetails.noSessions": "Занятий пока нет",
+  "studentDetails.viewAll": "Все занятия",
+
+  // Subjects
+  "subject.math": "Математика",
+  "subject.english": "Английский",
+  "subject.hebrew": "Иврит",
+  "subject.arabic": "Арабский",
+  "subject.physics": "Физика",
+  "subject.chemistry": "Химия",
+  "subject.biology": "Биология",
+  "subject.history": "История",
+  "subject.geography": "География",
+  "subject.bible": "Библия",
+  "subject.literature": "Литература",
+  "subject.civics": "Обществознание",
+  "subject.computer_science": "Информатика",
+  "subject.other": "Другое",
+
   // Validation
   "validation.nameMin": "Имя должно содержать не менее 2 символов",
   "validation.selectStudent": "Выберите ученика",

@@ -70,4 +70,5 @@ export async function updateSettings(formData: {
 
   revalidatePath("/settings");
   revalidatePath("/dashboard");
+  revalidatePath("/sessions/new");
 }

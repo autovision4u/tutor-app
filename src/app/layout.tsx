@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { LanguageProvider } from "@/lib/i18n/context";
+import { WelcomeSplash } from "@/components/ui/welcome-splash";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -38,7 +39,10 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col">
-        <LanguageProvider>{children}</LanguageProvider>
+        <LanguageProvider>
+          <WelcomeSplash />
+          {children}
+        </LanguageProvider>
       </body>
     </html>
   );

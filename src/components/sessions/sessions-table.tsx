@@ -6,6 +6,7 @@ import { he, enUS, ru } from "date-fns/locale";
 import { useRouter } from "next/navigation";
 import { deleteSession } from "@/lib/actions/sessions";
 import { useTranslation } from "@/lib/i18n/context";
+import { translateSubject } from "@/lib/subjects";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -247,7 +248,7 @@ export function SessionsTable({
                       {session.title}
                     </TableCell>
                     <TableCell className="hidden lg:table-cell text-muted-foreground">
-                      {session.subject}
+                      {translateSubject(session.subject, t)}
                     </TableCell>
                     <TableCell>
                       <Badge variant="secondary" className={statusColors[session.status]}>

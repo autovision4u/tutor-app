@@ -1,7 +1,7 @@
-import { getDashboardData } from "@/lib/actions/sessions";
+import { getDashboardData, getSessions } from "@/lib/actions/sessions";
 import { DashboardContent } from "@/components/dashboard/dashboard-content";
 
 export default async function DashboardPage() {
-  const data = await getDashboardData();
-  return <DashboardContent data={data} />;
+  const [data, allSessions] = await Promise.all([getDashboardData(), getSessions()]);
+  return <DashboardContent data={data} allSessions={allSessions} />;
 }

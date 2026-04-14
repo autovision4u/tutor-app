@@ -123,36 +123,305 @@
   }
   body {
     @apply bg-background text-foreground;
+    background-color: oklch(0.97 0.015 310);
+    min-height: 100vh;
   }
   html {
     @apply font-sans;
   }
 }
 
-/* Cloud background */
+/* ========== CLOUDS BACKGROUND ========== */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 0;
-  background-color: oklch(0.97 0.012 310);
   background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200'%3E%3Cellipse cx='150' cy='160' rx='70' ry='30' fill='%23f0d4f0' opacity='0.35'/%3E%3Ccircle cx='120' cy='145' r='30' fill='%23f0d4f0' opacity='0.35'/%3E%3Ccircle cx='150' cy='135' r='35' fill='%23f0d4f0' opacity='0.35'/%3E%3Ccircle cx='180' cy='145' r='28' fill='%23f0d4f0' opacity='0.35'/%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='180'%3E%3Cellipse cx='125' cy='140' rx='60' ry='25' fill='%23e8c8eb' opacity='0.25'/%3E%3Ccircle cx='100' cy='125' r='25' fill='%23e8c8eb' opacity='0.25'/%3E%3Ccircle cx='130' cy='118' r='28' fill='%23e8c8eb' opacity='0.25'/%3E%3Ccircle cx='155' cy='128' r='22' fill='%23e8c8eb' opacity='0.25'/%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='150'%3E%3Cellipse cx='100' cy='115' rx='50' ry='20' fill='%23f5daf5' opacity='0.3'/%3E%3Ccircle cx='80' cy='102' r='20' fill='%23f5daf5' opacity='0.3'/%3E%3Ccircle cx='105' cy='95' r='24' fill='%23f5daf5' opacity='0.3'/%3E%3Ccircle cx='125' cy='104' r='18' fill='%23f5daf5' opacity='0.3'/%3E%3C/svg%3E");
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='180'%3E%3Cg fill='%23f5c8e8' opacity='0.45'%3E%3Cellipse cx='140' cy='130' rx='75' ry='22'/%3E%3Ccircle cx='105' cy='115' r='30'/%3E%3Ccircle cx='140' cy='100' r='38'/%3E%3Ccircle cx='178' cy='112' r='28'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='150'%3E%3Cg fill='%23e4c4f5' opacity='0.4'%3E%3Cellipse cx='110' cy='105' rx='60' ry='18'/%3E%3Ccircle cx='85' cy='92' r='24'/%3E%3Ccircle cx='115' cy='82' r='30'/%3E%3Ccircle cx='142' cy='90' r='22'/%3E%3C/g%3E%3C/svg%3E"),
+    linear-gradient(135deg, oklch(0.98 0.01 310) 0%, oklch(0.96 0.025 320) 100%);
   background-position:
     0 0,
-    150px 100px,
-    80px 50px;
+    140px 90px,
+    0 0;
   background-size:
-    300px 200px,
-    250px 180px,
-    200px 150px;
-  background-repeat: repeat;
+    280px 180px,
+    220px 150px,
+    100% 100%;
+  background-repeat: repeat, repeat, no-repeat;
+  animation: clouds-drift 80s linear infinite;
+}
+
+@keyframes clouds-drift {
+  from {
+    background-position: 0 0, 140px 90px, 0 0;
+  }
+  to {
+    background-position: 280px 0, 420px 90px, 0 0;
+  }
+}
+
+/* ========== DECORATIVE GLOW BLOB ========== */
+body::after {
+  content: "";
+  position: fixed;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  top: -150px;
+  right: -100px;
+  background: radial-gradient(circle, oklch(0.82 0.18 290 / 0.35), transparent 70%);
+  filter: blur(60px);
+  animation: float-slow 20s ease-in-out infinite;
+}
+
+@keyframes float-slow {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(50px, -30px) scale(1.1);
+  }
+  66% {
+    transform: translate(-30px, 50px) scale(0.95);
+  }
+}
+
+@keyframes float-up {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px oklch(0.55 0.18 290 / 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px oklch(0.55 0.18 290 / 0.5);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 body > * {
   position: relative;
   z-index: 1;
+}
+
+/* ========== GLASS MORPHISM CARDS ========== */
+[data-slot="card"] {
+  background: oklch(1 0 0 / 0.7) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid oklch(1 0 0 / 0.4) !important;
+  box-shadow:
+    0 8px 32px oklch(0.55 0.18 290 / 0.08),
+    inset 0 1px 0 oklch(1 0 0 / 0.5);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fade-up 0.5s ease-out;
+}
+
+[data-slot="card"]:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 12px 40px oklch(0.55 0.18 290 / 0.15),
+    inset 0 1px 0 oklch(1 0 0 / 0.6);
+}
+
+/* ========== BEAUTIFUL BUTTONS ========== */
+button[data-slot="button"][data-variant="default"],
+.btn-primary {
+  background: linear-gradient(135deg, oklch(0.6 0.2 290), oklch(0.55 0.22 320)) !important;
+  box-shadow:
+    0 4px 15px oklch(0.55 0.2 290 / 0.35),
+    inset 0 1px 0 oklch(1 0 0 / 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+button[data-slot="button"][data-variant="default"]:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 6px 20px oklch(0.55 0.2 290 / 0.5),
+    inset 0 1px 0 oklch(1 0 0 / 0.3);
+}
+
+button[data-slot="button"][data-variant="default"]::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, oklch(1 0 0 / 0.2), transparent);
+  transition: left 0.6s ease;
+}
+
+button[data-slot="button"][data-variant="default"]:hover::before {
+  left: 100%;
+}
+
+/* ========== SIDEBAR GLASS ========== */
+aside {
+  background: oklch(1 0 0 / 0.75) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-inline-start: 1px solid oklch(1 0 0 / 0.4) !important;
+}
+
+/* Active nav item - gradient */
+aside a.bg-primary {
+  background: linear-gradient(135deg, oklch(0.6 0.2 290), oklch(0.55 0.22 320)) !important;
+  box-shadow: 0 4px 15px oklch(0.55 0.2 290 / 0.35);
+}
+
+/* ========== STAT CARDS ENHANCEMENT ========== */
+[data-slot="card"] .rounded-xl {
+  background: linear-gradient(135deg, oklch(0.95 0.08 290), oklch(0.93 0.1 330)) !important;
+  box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.5);
+}
+
+/* ========== ANIMATED GRADIENT TEXT ========== */
+.gradient-text {
+  background: linear-gradient(90deg, oklch(0.55 0.22 290), oklch(0.6 0.22 330), oklch(0.55 0.22 290));
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s linear infinite;
+}
+
+/* ========== INPUTS GLASS EFFECT ========== */
+input[data-slot="input"],
+textarea[data-slot="textarea"],
+[data-slot="select-trigger"] {
+  background: oklch(1 0 0 / 0.7) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid oklch(0.85 0.05 290 / 0.6) !important;
+  transition: all 0.2s ease !important;
+}
+
+input[data-slot="input"]:focus,
+textarea[data-slot="textarea"]:focus,
+[data-slot="select-trigger"]:focus {
+  background: oklch(1 0 0 / 0.9) !important;
+  border-color: oklch(0.6 0.2 290) !important;
+  box-shadow: 0 0 0 3px oklch(0.6 0.2 290 / 0.15) !important;
+}
+
+/* ========== BADGE GLOW ========== */
+[data-slot="badge"] {
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px oklch(0.55 0.18 290 / 0.1);
+  transition: all 0.2s ease;
+}
+
+[data-slot="badge"]:hover {
+  transform: scale(1.05);
+}
+
+/* ========== TABLE ROW HOVER ========== */
+tbody tr {
+  transition: all 0.2s ease;
+}
+
+tbody tr:hover {
+  background: linear-gradient(90deg, oklch(0.96 0.03 290 / 0.5), oklch(0.96 0.04 330 / 0.5)) !important;
+  transform: translateX(2px);
+}
+
+/* ========== FLOATING ICON CONTAINERS ========== */
+.h-12.w-12.rounded-xl,
+.h-9.w-9.rounded-full,
+.h-8.w-8.rounded-full,
+.h-7.w-7.rounded-full {
+  animation: float-up 4s ease-in-out infinite;
+}
+
+/* ========== STAGGER ANIMATION for stat cards only ========== */
+.grid.lg\:grid-cols-5 > * {
+  animation: fade-up 0.5s ease-out backwards;
+}
+.grid.lg\:grid-cols-5 > *:nth-child(1) { animation-delay: 0.05s; }
+.grid.lg\:grid-cols-5 > *:nth-child(2) { animation-delay: 0.1s; }
+.grid.lg\:grid-cols-5 > *:nth-child(3) { animation-delay: 0.15s; }
+.grid.lg\:grid-cols-5 > *:nth-child(4) { animation-delay: 0.2s; }
+.grid.lg\:grid-cols-5 > *:nth-child(5) { animation-delay: 0.25s; }
+
+/* ========== SCROLLBAR ========== */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, oklch(0.75 0.15 290), oklch(0.7 0.18 330));
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, oklch(0.65 0.2 290), oklch(0.6 0.22 330));
+  background-clip: padding-box;
+}
+
+/* ========== DIALOG GLASS ========== */
+[data-slot="dialog-content"] {
+  background: oklch(1 0 0 / 0.9) !important;
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  border: 1px solid oklch(1 0 0 / 0.5) !important;
+  box-shadow: 0 25px 50px oklch(0.55 0.18 290 / 0.2);
+  animation: scale-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ========== MAIN HEADINGS GRADIENT ========== */
+h1 {
+  background: linear-gradient(135deg, oklch(0.3 0.15 290), oklch(0.4 0.2 320));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
